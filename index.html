@@ -16,6 +16,7 @@
   --accent-glow: rgba(56, 189, 248, 0.35);
   --btn-gradient: linear-gradient(135deg, #f97316 0%, #ea580c 40%, #0284c7 100%);
   --bd-color: #1e2e4a;
+  --danger: #f87171;
 }
 
 * {
@@ -83,7 +84,7 @@ body {
   padding: 14px;
 }
 
-/* Card layout matching reference UI */
+/* Card */
 .card {
   background-color: var(--bg-card);
   border: 1px solid var(--bd-color);
@@ -166,7 +167,7 @@ body {
   width: 100%;
   margin-top: 14px;
   border: none;
-  border-radius: 22px;
+  border-radius: 12px;
   padding: 12px;
   font-size: 14px;
   font-weight: 700;
@@ -178,6 +179,22 @@ body {
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Admin Delete Button */
+.btn-admin-del {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid var(--danger);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--danger);
+  background: rgba(248, 113, 113, 0.05);
+  cursor: pointer;
+  text-align: center;
 }
 
 /* Forms */
@@ -455,6 +472,9 @@ input:focus, textarea:focus, select:focus {
   var STORAGE_KEY = "shabashka_jobs_v2";
   var FAVORITES_KEY = "shabashka_favs_v1";
 
+  // Ваш унікальний Telegram ID для доступу адміністратора
+  var ADMIN_ID = "1012733042";
+
   var tg = null;
   var tgUser = null;
   try {
@@ -474,13 +494,16 @@ input:focus, textarea:focus, select:focus {
     return d.innerHTML;
   }
 
+  var currentUserId = tgUser ? String(tgUser.id) : "my_local_id";
+  var isAdmin = (currentUserId === ADMIN_ID);
+
   function initUser() {
     var name = tgUser ? (tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "")) : "Користувач";
     var username = tgUser && tgUser.username ? "@" + tgUser.username : "@id" + (tgUser ? tgUser.id : "000");
     var photo = tgUser ? tgUser.photo_url : null;
     var letter = name.charAt(0).toUpperCase();
 
-    $("myName").textContent = name;
+    $("myName").textContent = name + (isAdmin ? " 🛡️ [Адмін]" : "");
     $("myUsername").textContent = username;
 
     if (photo) {
@@ -524,7 +547,6 @@ input:focus, textarea:focus, select:focus {
 
   var jobs = loadJobs();
   var favorites = loadFavs();
-  var currentUserId = tgUser ? String(tgUser.id) : "my_local_id";
 
   function toggleFav(id) {
     var idx = favorites.indexOf(id);
@@ -569,12 +591,16 @@ input:focus, textarea:focus, select:focus {
       html += '<button class="btn-contact-single" data-take="' + j.id + '">Зв’язатися</button>';
     }
 
+    // Червона кнопка видалення відображається виключно для вас (адміністратора)
+    if (isAdmin) {
+      html += '<button class="btn-admin-del" data-del="' + j.id + '">🗑️ Видалити (Адмін)</button>';
+    }
+
     html += '</div>';
     return html;
   }
 
   function render() {
-    // Feed Tab
     var activeJobs = jobs.filter(function(j){ return j.active !== false; });
     if (!activeJobs.length) {
       $("feedList").innerHTML = '<div class="empty-state">Замовлень поки немає</div>';
@@ -582,7 +608,6 @@ input:focus, textarea:focus, select:focus {
       $("feedList").innerHTML = activeJobs.slice().reverse().map(function(j){ return renderCard(j, false); }).join("");
     }
 
-    // Favorites Tab
     var favJobs = jobs.filter(function(j){ return favorites.indexOf(j.id) > -1; });
     if (!favJobs.length) {
       $("favList").innerHTML = '<div class="empty-state">У вас немає збережених замовлень</div>';
@@ -590,7 +615,6 @@ input:focus, textarea:focus, select:focus {
       $("favList").innerHTML = favJobs.map(function(j){ return renderCard(j, false); }).join("");
     }
 
-    // My Orders Tab
     var myJobs = jobs.filter(function(j){ return j.ownerId === currentUserId; });
     if (!myJobs.length) {
       $("myList").innerHTML = '<div class="empty-state">Ви ще не створювали замовлень</div>';
@@ -613,7 +637,6 @@ input:focus, textarea:focus, select:focus {
     });
   });
 
-  // Modal actions
   function openModal(j) {
     $("mjob").textContent = j.title + " • " + j.address;
     $("mname").textContent = j.cname;
@@ -633,6 +656,7 @@ input:focus, textarea:focus, select:focus {
     var takeId = e.target.getAttribute("data-take");
     var favId = e.target.getAttribute("data-fav");
     var toggleId = e.target.getAttribute("data-toggle");
+    var delId = e.target.getAttribute("data-del");
 
     if (takeId) {
       jobs.forEach(function(j){ if(String(j.id) === takeId) openModal(j); });
@@ -649,12 +673,18 @@ input:focus, textarea:focus, select:focus {
       saveJobs();
       render();
     }
+    if (delId && isAdmin) {
+      if (confirm("Вилити це замовлення з ефіру як адміністратор?")) {
+        jobs = jobs.filter(function(j){ return String(j.id) !== delId; });
+        saveJobs();
+        render();
+      }
+    }
   });
 
   $("mclose").addEventListener("click", function(){ $("modal").hidden = true; });
   $("modal").addEventListener("click", function(e){ if(e.target === $("modal")) $("modal").hidden = true; });
 
-  // Add Form Submit
   $("addForm").addEventListener("submit", function(e){
     e.preventDefault();
     if(!$("cphone").value.trim() && !$("ctg").value.trim()){
@@ -684,8 +714,6 @@ input:focus, textarea:focus, select:focus {
     saveJobs();
     e.target.reset();
     render();
-
-    // Redirect to My Orders
     document.querySelector('[data-tab="my"]').click();
   });
 
