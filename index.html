@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<title>Shabashka</title>
+<style>
+:root {
+  --bg-app: #0b1526;
+  --bg-card: #152238;
+  --top-bottom-bg: #070e1b;
+  --text-main: #ffffff;
+  --text-muted: #8ca3ba;
+  --brand-blue: #38bdf8;
+  --accent-glow: rgba(56, 189, 248, 0.35);
+  --btn-gradient: linear-gradient(135deg, #f97316 0%, #ea580c 40%, #0284c7 100%);
+  --bd-color: #1e2e4a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
+}
+
+[hidden] { display: none !important; }
+
+/* Upper Bar */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--top-bottom-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--bd-color);
+}
+
+.brand-title {
+  color: var(--brand-blue);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.avatar-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1d3557;
+  border: 2px solid var(--brand-blue);
+  box-shadow: 0 0 10px var(--accent-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+}
+
+.avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Container */
+.container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 14px;
+}
+
+/* Card layout matching reference UI */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--bd-color);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-title-group {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.card-price-group {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.card-price {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.fav-star {
+  font-size: 18px;
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.fav-star.active {
+  color: #f59e0b;
+}
+
+.card-desc {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.card-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+.btn-contact-single {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  border: none;
+  border-radius: 22px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--btn-gradient);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Forms */
+form {
+  display: grid;
+  gap: 12px;
+}
+
+input, textarea, select {
+  font: inherit;
+  color: #fff;
+  background-color: #0d1726;
+  border: 1px solid var(--bd-color);
+  border-radius: 12px;
+  padding: 13px;
+  width: 100%;
+  outline: none;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--brand-blue);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Profile Section */
+.profile-card {
+  background-color: var(--bg-card);
+  border-radius: 20px;
+  padding: 22px;
+  text-align: center;
+  border: 1px solid var(--bd-color);
+  margin-bottom: 16px;
+}
+
+.profile-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  background: #1d3557;
+  border: 3px solid var(--brand-blue);
+  box-shadow: 0 0 18px var(--accent-glow);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-name {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.profile-username {
+  color: var(--brand-blue);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-active { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.badge-inactive { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+.btn-toggle {
+  background: transparent;
+  border: 1px solid var(--bd-color);
+  color: var(--text-muted);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* Bottom Nav */
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background-color: var(--top-bottom-bg);
+  border-top: 1px solid var(--bd-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 10px;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 25%;
+}
+
+.nav-item svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  margin-bottom: 4px;
+}
+
+.nav-item.active {
+  color: var(--brand-blue);
+}
+
+/* Modal */
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 200;
+}
+
+.sheet {
+  background: var(--bg-card);
+  width: 100%;
+  max-width: 520px;
+  border-radius: 24px 24px 0 0;
+  padding: 22px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  border-top: 1px solid var(--bd-color);
+}
+
+.btn-sec {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--bd-color);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- Upper Bar -->
+<header class="top-bar">
+  <div class="brand-title">Shabashka</div>
+  <div class="avatar-wrapper" id="topAvatar">
+    <span id="avatarLetter">U</span>
+  </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+  <!-- Feed Tab -->
+  <div id="tab-feed">
+    <div id="feedList"></div>
+  </div>
+
+  <!-- Favorites Tab -->
+  <div id="tab-fav" hidden>
+    <div id="favList"></div>
+  </div>
+
+  <!-- Add Order Tab -->
+  <div id="tab-add" hidden>
+    <div class="card">
+      <h3 style="margin-bottom: 14px;">Нове замовлення</h3>
+      <form id="addForm">
+        <input id="title" placeholder="Що потрібно зробити" required maxlength="80">
+        <div class="two-col">
+          <input id="district" placeholder="Район" required maxlength="40">
+          <input id="address" placeholder="Точна адреса" required maxlength="100">
+        </div>
+        <div class="two-col">
+          <select id="ptype">
+            <option value="fixed">Фіксована оплата</option>
+            <option value="hourly">Погодинна оплата</option>
+          </select>
+          <input id="price" placeholder="Сума, грн" inputmode="numeric" required maxlength="8">
+        </div>
+        <input id="when" placeholder="Коли (наприклад: Сьогодні, 15:00)" maxlength="40">
+        <div class="two-col">
+          <input id="cname" placeholder="Ім’я" required maxlength="40">
+          <input id="cphone" placeholder="Телефон" inputmode="tel" maxlength="20">
+        </div>
+        <input id="ctg" placeholder="Telegram (напр: @username)" maxlength="60">
+        <textarea id="desc" rows="3" placeholder="Детальніше про завдання" maxlength="300"></textarea>
+        <button class="btn-contact-single" type="submit" style="border-radius:12px; margin-top:6px;">Опублікувати</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- My Orders / Profile Tab -->
+  <div id="tab-my" hidden>
+    <div class="profile-card">
+      <div class="profile-avatar" id="myAvatar">
+        <span id="myAvatarLetter">U</span>
+      </div>
+      <div class="profile-name" id="myName">Користувач</div>
+      <div class="profile-username" id="myUsername">@telegram</div>
+    </div>
+    <h4 style="margin-bottom: 12px; color: var(--text-muted);">Мої замовлення</h4>
+    <div id="myList"></div>
+  </div>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<nav class="nav-bar">
+  <button class="nav-item active" data-tab="feed">
+    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Замовлення
+  </button>
+  <button class="nav-item" data-tab="fav">
+    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+    Обране
+  </button>
+  <button class="nav-item" data-tab="add">
+    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    Додати
+  </button>
+  <button class="nav-item" data-tab="my">
+    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    Мої
+  </button>
+</nav>
+
+<!-- Modal -->
+<div id="modal" hidden>
+  <div class="sheet">
+    <h3 style="margin-bottom: 8px;">Зв’язатися із замовником</h3>
+    <div class="card-subtitle" id="mjob" style="margin-bottom: 14px;"></div>
+    <div style="font-size: 16px; font-weight: 700;" id="mname"></div>
+    <div style="font-size: 18px; margin-bottom: 16px; color: var(--brand-blue);" id="mphone"></div>
+    <a class="btn-contact-single" id="mcall" href="#" style="display:block; border-radius:12px;">Подзвонити</a>
+    <a class="btn-contact-single" id="mtg" href="#" target="_blank" rel="noopener" style="margin-top:10px; border-radius:12px; background:#229ed9;">Написати в Telegram</a>
+    <button class="btn-sec" id="mclose" type="button">Закрити</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var STORAGE_KEY = "shabashka_jobs_v2";
+  var FAVORITES_KEY = "shabashka_favs_v1";
+
+  var tg = null;
+  var tgUser = null;
+  try {
+    if (window.Telegram && window.Telegram.WebApp) {
+      tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+      tgUser = tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
+    }
+  } catch(e){}
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    if(!s) return '';
+    var d = document.createElement("div");
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function initUser() {
+    var name = tgUser ? (tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "")) : "Користувач";
+    var username = tgUser && tgUser.username ? "@" + tgUser.username : "@id" + (tgUser ? tgUser.id : "000");
+    var photo = tgUser ? tgUser.photo_url : null;
+    var letter = name.charAt(0).toUpperCase();
+
+    $("myName").textContent = name;
+    $("myUsername").textContent = username;
+
+    if (photo) {
+      $("topAvatar").innerHTML = '<img src="' + photo + '" alt="avatar">';
+      $("myAvatar").innerHTML = '<img src="' + photo + '" alt="avatar">';
+    } else {
+      $("avatarLetter").textContent = letter;
+      $("myAvatarLetter").textContent = letter;
+    }
+  }
+
+  var seed = [
+    {id:1, title:"Розвантажити фуру з плиткою", district:"Оболонь", address:"просп. Оболонський, 12", ptype:"fixed", price:1800, when:"Завтра, 09:00", cname:"Олексій", cphone:"+380 50 000 00 01", ctg:"shabashka_demo", desc:"Потрібно 2 людини, приблизно 3 години.", ownerId: "demo", active: true},
+    {id:2, title:"Допомога з переїздом (2 кімнати)", district:"Троєщина", address:"вул. Милославська, 31", ptype:"hourly", price:250, when:"Субота, 11:00", cname:"Марія", cphone:"+380 67 000 00 02", ctg:"", desc:"Без ліфта, 4 поверх.", ownerId: "demo", active: true},
+    {id:3, title:"Прибрати подвір’я після ремонту", district:"Борщагівка", address:"вул. Симиренка, 5", ptype:"fixed", price:1200, when:"Сьогодні, 16:00", cname:"Іван", cphone:"+380 93 000 00 03", ctg:"", desc:"", ownerId: "demo", active: true}
+  ];
+
+  function loadJobs() {
+    try {
+      var s = localStorage.getItem(STORAGE_KEY);
+      if(s) return JSON.parse(s);
+    } catch(e){}
+    return seed;
+  }
+
+  function saveJobs() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs)); } catch(e){}
+  }
+
+  function loadFavs() {
+    try {
+      var s = localStorage.getItem(FAVORITES_KEY);
+      if(s) return JSON.parse(s);
+    } catch(e){}
+    return [];
+  }
+
+  function saveFavs() {
+    try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites)); } catch(e){}
+  }
+
+  var jobs = loadJobs();
+  var favorites = loadFavs();
+  var currentUserId = tgUser ? String(tgUser.id) : "my_local_id";
+
+  function toggleFav(id) {
+    var idx = favorites.indexOf(id);
+    if (idx > -1) {
+      favorites.splice(idx, 1);
+    } else {
+      favorites.push(id);
+    }
+    saveFavs();
+    render();
+  }
+
+  function mapUrl(a) {
+    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(a);
+  }
+
+  function renderCard(j, isMyTab) {
+    var isFav = favorites.indexOf(j.id) > -1;
+    var priceTxt = esc(String(j.price)) + (j.ptype === "hourly" ? " ₴/год" : " ₴");
+    
+    var html = '<div class="card">' +
+      '<div class="card-top">' +
+        '<div class="card-title-group">' +
+          '<div class="card-title">' + esc(j.title) + '</div>' +
+          '<div class="card-subtitle">' + esc(j.district) + '</div>' +
+        '</div>' +
+        '<div class="card-price-group">' +
+          (!isMyTab ? '<div class="fav-star ' + (isFav ? 'active' : '') + '" data-fav="' + j.id + '">★</div>' : '') +
+          '<div class="card-price">' + priceTxt + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      (j.desc ? '<div class="card-desc">' + esc(j.desc) + '</div>' : '') +
+      '<div class="card-time">📍 <a style="color:var(--brand-blue); text-decoration:none;" target="_blank" href="' + mapUrl(j.address) + '">' + esc(j.address) + '</a>' + 
+      (j.when ? ' • ' + esc(j.when) : '') + 
+      (isMyTab ? ' <span class="badge ' + (j.active ? 'badge-active' : 'badge-inactive') + '">' + (j.active ? 'Активне' : 'Деактивовано') + '</span>' : '') +
+      '</div>';
+
+    if (isMyTab) {
+      html += '<button class="btn-toggle" data-toggle="' + j.id + '">' + (j.active ? 'Деактивувати' : 'Активувати') + '</button>';
+    } else {
+      html += '<button class="btn-contact-single" data-take="' + j.id + '">Зв’язатися</button>';
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  function render() {
+    // Feed Tab
+    var activeJobs = jobs.filter(function(j){ return j.active !== false; });
+    if (!activeJobs.length) {
+      $("feedList").innerHTML = '<div class="empty-state">Замовлень поки немає</div>';
+    } else {
+      $("feedList").innerHTML = activeJobs.slice().reverse().map(function(j){ return renderCard(j, false); }).join("");
+    }
+
+    // Favorites Tab
+    var favJobs = jobs.filter(function(j){ return favorites.indexOf(j.id) > -1; });
+    if (!favJobs.length) {
+      $("favList").innerHTML = '<div class="empty-state">У вас немає збережених замовлень</div>';
+    } else {
+      $("favList").innerHTML = favJobs.map(function(j){ return renderCard(j, false); }).join("");
+    }
+
+    // My Orders Tab
+    var myJobs = jobs.filter(function(j){ return j.ownerId === currentUserId; });
+    if (!myJobs.length) {
+      $("myList").innerHTML = '<div class="empty-state">Ви ще не створювали замовлень</div>';
+    } else {
+      $("myList").innerHTML = myJobs.slice().reverse().map(function(j){ return renderCard(j, true); }).join("");
+    }
+  }
+
+  // Navigation
+  document.querySelectorAll(".nav-item").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      document.querySelectorAll(".nav-item").forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      
+      var tab = btn.getAttribute("data-tab");
+      $("tab-feed").hidden = (tab !== "feed");
+      $("tab-fav").hidden = (tab !== "fav");
+      $("tab-add").hidden = (tab !== "add");
+      $("tab-my").hidden = (tab !== "my");
+    });
+  });
+
+  // Modal actions
+  function openModal(j) {
+    $("mjob").textContent = j.title + " • " + j.address;
+    $("mname").textContent = j.cname;
+    $("mphone").textContent = j.cphone || "Номер не вказано";
+    $("mcall").hidden = !j.cphone;
+    if(j.cphone) $("mcall").setAttribute("href", "tel:" + j.cphone.replace(/[^+\d]/g, ""));
+    $("mtg").hidden = !j.ctg;
+    if(j.ctg) {
+      $("mtg").setAttribute("href", "https://t.me/" + encodeURIComponent(j.ctg.replace(/^@/, "")));
+      $("mtg").textContent = "Написати в Telegram: @" + j.ctg.replace(/^@/, "");
+    }
+    $("modal").hidden = false;
+  }
+
+  // Event Delegation
+  document.addEventListener("click", function(e){
+    var takeId = e.target.getAttribute("data-take");
+    var favId = e.target.getAttribute("data-fav");
+    var toggleId = e.target.getAttribute("data-toggle");
+
+    if (takeId) {
+      jobs.forEach(function(j){ if(String(j.id) === takeId) openModal(j); });
+    }
+    if (favId) {
+      toggleFav(parseInt(favId, 10));
+    }
+    if (toggleId) {
+      jobs.forEach(function(j){
+        if(String(j.id) === toggleId) {
+          j.active = !j.active;
+        }
+      });
+      saveJobs();
+      render();
+    }
+  });
+
+  $("mclose").addEventListener("click", function(){ $("modal").hidden = true; });
+  $("modal").addEventListener("click", function(e){ if(e.target === $("modal")) $("modal").hidden = true; });
+
+  // Add Form Submit
+  $("addForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!$("cphone").value.trim() && !$("ctg").value.trim()){
+      $("cphone").focus();
+      $("cphone").placeholder = "Вкажіть телефон або Telegram!";
+      return;
+    }
+
+    var newId = jobs.reduce(function(m, j){ return Math.max(m, j.id); }, 0) + 1;
+    var newJob = {
+      id: newId,
+      title: $("title").value.trim(),
+      district: $("district").value.trim(),
+      address: $("address").value.trim(),
+      ptype: $("ptype").value,
+      price: $("price").value.trim(),
+      when: $("when").value.trim(),
+      cname: $("cname").value.trim(),
+      cphone: $("cphone").value.trim(),
+      ctg: $("ctg").value.trim(),
+      desc: $("desc").value.trim(),
+      ownerId: currentUserId,
+      active: true
+    };
+
+    jobs.push(newJob);
+    saveJobs();
+    e.target.reset();
+    render();
+
+    // Redirect to My Orders
+    document.querySelector('[data-tab="my"]').click();
+  });
+
+  initUser();
+  render();
+})();
+</script>
+</body>
+</html>
