@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <title>Shabashka</title>
 <style>
 :root {
@@ -18,14 +19,7 @@
   --bd-color: #1e2e4a;
   --danger: #f87171;
 }
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
   background-color: var(--bg-app);
   color: var(--text-main);
@@ -33,340 +27,120 @@ body {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
 }
-
 [hidden] { display: none !important; }
-
 /* Upper Bar */
 .top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: sticky; top: 0; z-index: 100;
   background-color: var(--top-bottom-bg);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
   padding: 14px 18px;
   border-bottom: 1px solid var(--bd-color);
 }
-
-.brand-title {
-  color: var(--brand-blue);
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-}
-
+.brand-title { color: var(--brand-blue); font-size: 22px; font-weight: 800; letter-spacing: 0.4px; }
 .avatar-wrapper {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #1d3557;
-  border: 2px solid var(--brand-blue);
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #1d3557; border: 2px solid var(--brand-blue);
   box-shadow: 0 0 10px var(--accent-glow);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #fff;
-  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; overflow: hidden;
 }
-
-.avatar-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
+.avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 /* Container */
-.container {
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 14px;
-}
-
+.container { max-width: 520px; margin: 0 auto; padding: 14px; }
 /* Card */
 .card {
   background-color: var(--bg-card);
   border: 1px solid var(--bd-color);
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 14px;
+  border-radius: 18px; padding: 16px; margin-bottom: 14px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
-
-.card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.card-title-group {
-  flex: 1;
-}
-
-.card-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.3;
-}
-
-.card-subtitle {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-top: 3px;
-}
-
-.card-price-group {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-.card-price {
-  font-size: 18px;
-  font-weight: 800;
-  color: #ffffff;
-  white-space: nowrap;
-}
-
-.fav-star {
-  font-size: 18px;
-  color: #475569;
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.2s ease;
-  line-height: 1;
-}
-
-.fav-star.active {
-  color: #f59e0b;
-}
-
-.card-desc {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #cbd5e1;
-  line-height: 1.4;
-}
-
-.card-time {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 10px;
-}
-
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.card-title-group { flex: 1; }
+.card-title { font-size: 17px; font-weight: 700; color: #ffffff; line-height: 1.3; }
+.card-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+.card-price-group { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.card-price { font-size: 18px; font-weight: 800; color: #ffffff; white-space: nowrap; }
+.fav-star { font-size: 18px; color: #475569; cursor: pointer; user-select: none; transition: color 0.2s ease; line-height: 1; }
+.fav-star.active { color: #f59e0b; }
+.card-desc { margin-top: 10px; font-size: 14px; color: #cbd5e1; line-height: 1.4; }
+.card-time { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); margin-top: 10px; }
 .btn-contact-single {
-  display: block;
-  width: 100%;
-  margin-top: 14px;
-  border: none;
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #ffffff;
-  background: var(--btn-gradient);
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
+  display: block; width: 100%; margin-top: 14px; border: none; border-radius: 12px;
+  padding: 12px; font-size: 14px; font-weight: 700; color: #ffffff;
+  background: var(--btn-gradient); cursor: pointer; text-align: center; text-decoration: none;
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: uppercase; letter-spacing: 0.5px;
 }
-
 /* Admin Delete Button */
 .btn-admin-del {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  border: 1px solid var(--danger);
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--danger);
-  background: rgba(248, 113, 113, 0.05);
-  cursor: pointer;
-  text-align: center;
+  display: block; width: 100%; margin-top: 8px;
+  border: 1px solid var(--danger); border-radius: 12px; padding: 10px;
+  font-size: 13px; font-weight: 600; color: var(--danger);
+  background: rgba(248, 113, 113, 0.05); cursor: pointer; text-align: center;
 }
-
 /* Forms */
-form {
-  display: grid;
-  gap: 12px;
-}
-
+form { display: grid; gap: 12px; }
 input, textarea, select {
-  font: inherit;
-  color: #fff;
-  background-color: #0d1726;
-  border: 1px solid var(--bd-color);
-  border-radius: 12px;
-  padding: 13px;
-  width: 100%;
-  outline: none;
+  font: inherit; color: #fff; background-color: #0d1726;
+  border: 1px solid var(--bd-color); border-radius: 12px; padding: 13px;
+  width: 100%; outline: none;
 }
-
-input:focus, textarea:focus, select:focus {
-  border-color: var(--brand-blue);
-}
-
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
+input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 /* Profile Section */
 .profile-card {
-  background-color: var(--bg-card);
-  border-radius: 20px;
-  padding: 22px;
-  text-align: center;
-  border: 1px solid var(--bd-color);
-  margin-bottom: 16px;
+  background-color: var(--bg-card); border-radius: 20px; padding: 22px;
+  text-align: center; border: 1px solid var(--bd-color); margin-bottom: 16px;
 }
-
 .profile-avatar {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  margin: 0 auto 12px;
-  background: #1d3557;
-  border: 3px solid var(--brand-blue);
-  box-shadow: 0 0 18px var(--accent-glow);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  font-weight: bold;
+  width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 12px;
+  background: #1d3557; border: 3px solid var(--brand-blue);
+  box-shadow: 0 0 18px var(--accent-glow); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; font-weight: bold;
 }
-
-.profile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.profile-name {
-  font-size: 19px;
-  font-weight: 700;
-}
-
-.profile-username {
-  color: var(--brand-blue);
-  font-size: 14px;
-  margin-top: 4px;
-}
-
-.badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
-}
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-size: 19px; font-weight: 700; }
+.profile-username { color: var(--brand-blue); font-size: 14px; margin-top: 4px; }
+.badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
 .badge-active { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
 .badge-inactive { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-
 .btn-toggle {
-  background: transparent;
-  border: 1px solid var(--bd-color);
-  color: var(--text-muted);
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  cursor: pointer;
-  margin-top: 10px;
-  width: 100%;
+  background: transparent; border: 1px solid var(--bd-color); color: var(--text-muted);
+  padding: 8px 12px; border-radius: 10px; font-size: 12px; cursor: pointer;
+  margin-top: 10px; width: 100%;
 }
-
 /* Bottom Nav */
 .nav-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  background-color: var(--top-bottom-bg);
-  border-top: 1px solid var(--bd-color);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 100;
+  position: fixed; bottom: 0; left: 0; right: 0; height: 64px;
+  background-color: var(--top-bottom-bg); border-top: 1px solid var(--bd-color);
+  display: flex; justify-content: space-around; align-items: center; z-index: 100;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-
 .nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--text-muted);
-  font-size: 10px;
-  text-decoration: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  width: 25%;
+  display: flex; flex-direction: column; align-items: center;
+  color: var(--text-muted); font-size: 10px; text-decoration: none;
+  background: none; border: none; cursor: pointer; width: 25%;
 }
-
-.nav-item svg {
-  width: 22px;
-  height: 22px;
-  fill: currentColor;
-  margin-bottom: 4px;
-}
-
-.nav-item.active {
-  color: var(--brand-blue);
-}
-
+.nav-item svg { width: 22px; height: 22px; fill: currentColor; margin-bottom: 4px; }
+.nav-item.active { color: var(--brand-blue); }
 /* Modal */
 #modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 200;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  display: flex; align-items: flex-end; justify-content: center; z-index: 200;
 }
-
 .sheet {
-  background: var(--bg-card);
-  width: 100%;
-  max-width: 520px;
+  background: var(--bg-card); width: 100%; max-width: 520px;
   border-radius: 24px 24px 0 0;
   padding: 22px 18px calc(22px + env(safe-area-inset-bottom, 0px));
-  box-sizing: border-box;
-  border-top: 1px solid var(--bd-color);
+  box-sizing: border-box; border-top: 1px solid var(--bd-color);
 }
-
 .btn-sec {
-  width: 100%;
-  background: transparent;
-  border: 1px solid var(--bd-color);
-  color: #fff;
-  border-radius: 12px;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 15px;
-  cursor: pointer;
+  width: 100%; background: transparent; border: 1px solid var(--bd-color);
+  color: #fff; border-radius: 12px; padding: 12px; margin-top: 10px;
+  font-size: 15px; cursor: pointer;
 }
-
-.empty-state {
-  text-align: center;
-  color: var(--text-muted);
-  padding: 40px 0;
-}
+.empty-state { text-align: center; color: var(--text-muted); padding: 40px 0; }
 </style>
 </head>
 <body>
@@ -469,11 +243,10 @@ input:focus, textarea:focus, select:focus {
 
 <script>
 (function(){
-  var STORAGE_KEY = "shabashka_jobs_v2";
-  var FAVORITES_KEY = "shabashka_favs_v1";
-
-  // Ваш унікальний Telegram ID для доступу адміністратора
-  var ADMIN_ID = "1012733042";
+  // ===== Supabase =====
+  var SUPABASE_URL = "https://gopwrcmawamwoatxxbao.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_OSEgQpN8TnSr_M121wdpzQ_Z4ICREZu";
+  var sb = null;
 
   var tg = null;
   var tgUser = null;
@@ -494,8 +267,9 @@ input:focus, textarea:focus, select:focus {
     return d.innerHTML;
   }
 
-  var currentUserId = tgUser ? String(tgUser.id) : "my_local_id";
-  var isAdmin = (currentUserId === ADMIN_ID);
+  // Адмін визначається сервером (таблиця admins у Supabase), а не цим кодом
+  var currentUserId = tgUser ? String(tgUser.id) : "";
+  var isAdmin = false;
 
   function initUser() {
     var name = tgUser ? (tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "")) : "Користувач";
@@ -515,47 +289,38 @@ input:focus, textarea:focus, select:focus {
     }
   }
 
-  var seed = [
-    {id:1, title:"Розвантажити фуру з плиткою", district:"Оболонь", address:"просп. Оболонський, 12", ptype:"fixed", price:1800, when:"Завтра, 09:00", cname:"Олексій", cphone:"+380 50 000 00 01", ctg:"shabashka_demo", desc:"Потрібно 2 людини, приблизно 3 години.", ownerId: "demo", active: true},
-    {id:2, title:"Допомога з переїздом (2 кімнати)", district:"Троєщина", address:"вул. Милославська, 31", ptype:"hourly", price:250, when:"Субота, 11:00", cname:"Марія", cphone:"+380 67 000 00 02", ctg:"", desc:"Без ліфта, 4 поверх.", ownerId: "demo", active: true},
-    {id:3, title:"Прибрати подвір’я після ремонту", district:"Борщагівка", address:"вул. Симиренка, 5", ptype:"fixed", price:1200, when:"Сьогодні, 16:00", cname:"Іван", cphone:"+380 93 000 00 03", ctg:"", desc:"", ownerId: "demo", active: true}
-  ];
+  var jobs = [];
+  var favorites = [];
 
-  function loadJobs() {
-    try {
-      var s = localStorage.getItem(STORAGE_KEY);
-      if(s) return JSON.parse(s);
-    } catch(e){}
-    return seed;
+  // рядок з бази -> об'єкт, який розуміє решта коду
+  function fromDb(r) {
+    return {
+      id: r.id, title: r.title, district: r.district, address: r.address,
+      ptype: r.pay_type, price: r.price, when: r.when_text, cname: r.contact_name,
+      cphone: r.contact_phone, ctg: r.contact_telegram, desc: r.description,
+      ownerId: String(r.author_id), active: r.is_active
+    };
   }
 
-  function saveJobs() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs)); } catch(e){}
+  async function loadJobs() {
+    var res = await sb.from("orders").select("*").order("created_at", { ascending: true });
+    if (res.error) { console.error(res.error); return; }
+    jobs = res.data.map(fromDb);
   }
 
-  function loadFavs() {
-    try {
-      var s = localStorage.getItem(FAVORITES_KEY);
-      if(s) return JSON.parse(s);
-    } catch(e){}
-    return [];
+  async function loadFavs() {
+    var res = await sb.from("favorites").select("order_id");
+    if (res.error) { console.error(res.error); return; }
+    favorites = res.data.map(function(f){ return f.order_id; });
   }
 
-  function saveFavs() {
-    try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites)); } catch(e){}
-  }
-
-  var jobs = loadJobs();
-  var favorites = loadFavs();
-
-  function toggleFav(id) {
-    var idx = favorites.indexOf(id);
-    if (idx > -1) {
-      favorites.splice(idx, 1);
-    } else {
-      favorites.push(id);
-    }
-    saveFavs();
+  async function toggleFav(id) {
+    var has = favorites.indexOf(id) > -1;
+    var res = has
+      ? await sb.from("favorites").delete().eq("user_id", currentUserId).eq("order_id", id)
+      : await sb.from("favorites").insert({ user_id: currentUserId, order_id: id });
+    if (res.error) { alert("Помилка: " + res.error.message); return; }
+    await loadFavs();
     render();
   }
 
@@ -566,7 +331,7 @@ input:focus, textarea:focus, select:focus {
   function renderCard(j, isMyTab) {
     var isFav = favorites.indexOf(j.id) > -1;
     var priceTxt = esc(String(j.price)) + (j.ptype === "hourly" ? " ₴/год" : " ₴");
-    
+
     var html = '<div class="card">' +
       '<div class="card-top">' +
         '<div class="card-title-group">' +
@@ -580,8 +345,8 @@ input:focus, textarea:focus, select:focus {
       '</div>' +
 
       (j.desc ? '<div class="card-desc">' + esc(j.desc) + '</div>' : '') +
-      '<div class="card-time">📍 <a style="color:var(--brand-blue); text-decoration:none;" target="_blank" href="' + mapUrl(j.address) + '">' + esc(j.address) + '</a>' + 
-      (j.when ? ' • ' + esc(j.when) : '') + 
+      '<div class="card-time">📍 <a style="color:var(--brand-blue); text-decoration:none;" target="_blank" href="' + mapUrl(j.address) + '">' + esc(j.address) + '</a>' +
+      (j.when ? ' • ' + esc(j.when) : '') +
       (isMyTab ? ' <span class="badge ' + (j.active ? 'badge-active' : 'badge-inactive') + '">' + (j.active ? 'Активне' : 'Деактивовано') + '</span>' : '') +
       '</div>';
 
@@ -591,7 +356,7 @@ input:focus, textarea:focus, select:focus {
       html += '<button class="btn-contact-single" data-take="' + j.id + '">Зв’язатися</button>';
     }
 
-    // Червона кнопка видалення відображається виключно для вас (адміністратора)
+    // Червона кнопка видалення відображається виключно для адміністратора
     if (isAdmin) {
       html += '<button class="btn-admin-del" data-del="' + j.id + '">🗑️ Видалити (Адмін)</button>';
     }
@@ -628,7 +393,7 @@ input:focus, textarea:focus, select:focus {
     btn.addEventListener("click", function(){
       document.querySelectorAll(".nav-item").forEach(function(b){ b.classList.remove("active"); });
       btn.classList.add("active");
-      
+
       var tab = btn.getAttribute("data-tab");
       $("tab-feed").hidden = (tab !== "feed");
       $("tab-fav").hidden = (tab !== "fav");
@@ -652,7 +417,8 @@ input:focus, textarea:focus, select:focus {
   }
 
   // Event Delegation
-  document.addEventListener("click", function(e){
+  document.addEventListener("click", async function(e){
+    if (!sb) return;
     var takeId = e.target.getAttribute("data-take");
     var favId = e.target.getAttribute("data-fav");
     var toggleId = e.target.getAttribute("data-toggle");
@@ -662,21 +428,22 @@ input:focus, textarea:focus, select:focus {
       jobs.forEach(function(j){ if(String(j.id) === takeId) openModal(j); });
     }
     if (favId) {
-      toggleFav(parseInt(favId, 10));
+      await toggleFav(favId);
     }
     if (toggleId) {
-      jobs.forEach(function(j){
-        if(String(j.id) === toggleId) {
-          j.active = !j.active;
-        }
-      });
-      saveJobs();
-      render();
+      var cur = jobs.filter(function(j){ return String(j.id) === toggleId; })[0];
+      if (cur) {
+        var r1 = await sb.from("orders").update({ is_active: !cur.active }).eq("id", toggleId);
+        if (r1.error) { alert("Помилка: " + r1.error.message); return; }
+        await loadJobs();
+        render();
+      }
     }
     if (delId && isAdmin) {
       if (confirm("Вилити це замовлення з ефіру як адміністратор?")) {
-        jobs = jobs.filter(function(j){ return String(j.id) !== delId; });
-        saveJobs();
+        var r2 = await sb.from("orders").delete().eq("id", delId);
+        if (r2.error) { alert("Помилка: " + r2.error.message); return; }
+        await loadJobs();
         render();
       }
     }
@@ -685,40 +452,86 @@ input:focus, textarea:focus, select:focus {
   $("mclose").addEventListener("click", function(){ $("modal").hidden = true; });
   $("modal").addEventListener("click", function(e){ if(e.target === $("modal")) $("modal").hidden = true; });
 
-  $("addForm").addEventListener("submit", function(e){
+  var submitting = false;
+  $("addForm").addEventListener("submit", async function(e){
     e.preventDefault();
+    if (!sb || submitting) return;
     if(!$("cphone").value.trim() && !$("ctg").value.trim()){
       $("cphone").focus();
       $("cphone").placeholder = "Вкажіть телефон або Telegram!";
       return;
     }
+    var priceNum = Number($("price").value.replace(/\s/g, "").replace(",", "."));
+    if (!isFinite(priceNum)) { alert("Вкажіть суму цифрами"); return; }
 
-    var newId = jobs.reduce(function(m, j){ return Math.max(m, j.id); }, 0) + 1;
-    var newJob = {
-      id: newId,
+    var form = e.target;
+    submitting = true;
+    var res = await sb.from("orders").insert({
+      author_id: currentUserId,
       title: $("title").value.trim(),
       district: $("district").value.trim(),
       address: $("address").value.trim(),
-      ptype: $("ptype").value,
-      price: $("price").value.trim(),
-      when: $("when").value.trim(),
-      cname: $("cname").value.trim(),
-      cphone: $("cphone").value.trim(),
-      ctg: $("ctg").value.trim(),
-      desc: $("desc").value.trim(),
-      ownerId: currentUserId,
-      active: true
-    };
+      pay_type: $("ptype").value,
+      price: priceNum,
+      when_text: $("when").value.trim(),
+      contact_name: $("cname").value.trim(),
+      contact_phone: $("cphone").value.trim(),
+      contact_telegram: $("ctg").value.trim(),
+      description: $("desc").value.trim(),
+      is_active: true
+    });
+    submitting = false;
+    if (res.error) { alert("Помилка: " + res.error.message); return; }
 
-    jobs.push(newJob);
-    saveJobs();
-    e.target.reset();
+    form.reset();
+    await loadJobs();
     render();
     document.querySelector('[data-tab="my"]').click();
   });
 
-  initUser();
-  render();
+  // ===== Вхід через Telegram + підключення до бази =====
+  async function initApp() {
+    initUser();
+    if (!tg || !tg.initData) {
+      $("feedList").innerHTML = '<div class="empty-state">Відкрийте додаток через Telegram</div>';
+      return;
+    }
+    $("feedList").innerHTML = '<div class="empty-state">Завантаження…</div>';
+    try {
+      var r = await fetch(SUPABASE_URL + "/functions/v1/tg-auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
+        body: JSON.stringify({ initData: tg.initData })
+      });
+      if (!r.ok) throw new Error("auth " + r.status);
+      var a = await r.json();
+      currentUserId = String(a.user.id);
+      isAdmin = !!a.isAdmin;
+
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        global: { headers: { Authorization: "Bearer " + a.token } }
+      });
+      sb.realtime.setAuth(a.token);
+
+      initUser();
+      await loadJobs();
+      await loadFavs();
+      render();
+
+      // живе оновлення: хтось додав/видалив/деактивував — стрічка оновиться в усіх
+      sb.channel("orders-live")
+        .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, async function(){
+          await loadJobs();
+          render();
+        })
+        .subscribe();
+    } catch (err) {
+      console.error(err);
+      $("feedList").innerHTML = '<div class="empty-state">Не вдалось увійти. Спробуйте закрити й відкрити додаток знову.</div>';
+    }
+  }
+
+  initApp();
 })();
 </script>
 </body>
