@@ -352,6 +352,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
 
     if (isMyTab) {
       html += '<button class="btn-toggle" data-toggle="' + j.id + '">' + (j.active ? 'Деактивувати' : 'Активувати') + '</button>';
+      if (!j.active && !isAdmin) {
+        html += '<button class="btn-admin-del" data-mydel="' + j.id + '">🗑️ Видалити зі своїх</button>';
+      }
     } else {
       html += '<button class="btn-contact-single" data-take="' + j.id + '">Зв’язатися</button>';
     }
@@ -423,7 +426,17 @@ input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
     var favId = e.target.getAttribute("data-fav");
     var toggleId = e.target.getAttribute("data-toggle");
     var delId = e.target.getAttribute("data-del");
+    var myDelId = e.target.getAttribute("data-mydel");
 
+    if (myDelId) {
+      if (confirm("Видалити це замовлення зі своїх? Відновити його буде неможливо.")) {
+        var r3 = await sb.from("orders").delete()
+          .eq("id", myDelId).eq("author_id", currentUserId).eq("is_active", false);
+        if (r3.error) { alert("Помилка: " + r3.error.message); return; }
+        await loadJobs();
+        render();
+      }
+    }
     if (takeId) {
       jobs.forEach(function(j){ if(String(j.id) === takeId) openModal(j); });
     }
