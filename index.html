@@ -205,6 +205,10 @@ input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
     </div>
     <h4 style="margin-bottom: 12px; color: var(--text-muted);">Мої замовлення</h4>
     <div id="myList"></div>
+    <div id="banBox" hidden>
+      <h4 style="margin: 20px 0 12px; color: var(--text-muted);">Заблоковані</h4>
+      <div id="banList"></div>
+    </div>
   </div>
 </div>
 
@@ -314,6 +318,27 @@ input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
     favorites = res.data.map(function(f){ return f.order_id; });
   }
 
+  // дані для адміна: хто є хто і хто заблокований
+  var userMap = {};
+  var banned = [];
+
+  async function loadAdminData() {
+    if (!isAdmin) return;
+    var u = await sb.from("users").select("telegram_id, first_name, username");
+    if (!u.error) {
+      userMap = {};
+      u.data.forEach(function(x){ userMap[String(x.telegram_id)] = x; });
+    }
+    var b = await sb.from("banned").select("telegram_id");
+    if (!b.error) banned = b.data.map(function(x){ return String(x.telegram_id); });
+  }
+
+  function who(id) {
+    var u = userMap[id];
+    var n = u ? (u.username ? "@" + u.username : (u.first_name || "без імені")) : "невідомий";
+    return n + " · ID " + id;
+  }
+
   async function toggleFav(id) {
     var has = favorites.indexOf(id) > -1;
     var res = has
@@ -350,6 +375,11 @@ input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
       (isMyTab ? ' <span class="badge ' + (j.active ? 'badge-active' : 'badge-inactive') + '">' + (j.active ? 'Активне' : 'Деактивовано') + '</span>' : '') +
       '</div>';
 
+    // Лише для адміна: хто додав замовлення
+    if (isAdmin && j.ownerId !== currentUserId) {
+      html += '<div class="card-subtitle" style="margin-top:8px;">👤 ' + esc(who(j.ownerId)) + '</div>';
+    }
+
     if (isMyTab) {
       html += '<button class="btn-toggle" data-toggle="' + j.id + '">' + (j.active ? 'Деактивувати' : 'Активувати') + '</button>';
       if (!j.active && !isAdmin) {
@@ -362,6 +392,13 @@ input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
     // Червона кнопка видалення відображається виключно для адміністратора
     if (isAdmin) {
       html += '<button class="btn-admin-del" data-del="' + j.id + '">🗑️ Видалити (Адмін)</button>';
+      if (j.ownerId !== currentUserId) {
+        if (banned.indexOf(j.ownerId) > -1) {
+          html += '<div class="card-subtitle" style="margin-top:8px; color:var(--danger);">⛔ Автора заблоковано</div>';
+        } else {
+          html += '<button class="btn-admin-del" data-ban="' + esc(j.ownerId) + '">⛔ Заблокувати автора</button>';
+        }
+      }
     }
 
     html += '</div>';
@@ -388,6 +425,19 @@ input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
       $("myList").innerHTML = '<div class="empty-state">Ви ще не створювали замовлень</div>';
     } else {
       $("myList").innerHTML = myJobs.slice().reverse().map(function(j){ return renderCard(j, true); }).join("");
+    }
+
+    // список заблокованих (тільки адмін)
+    $("banBox").hidden = !isAdmin;
+    if (isAdmin) {
+      if (!banned.length) {
+        $("banList").innerHTML = '<div class="empty-state" style="padding:16px 0;">Нікого не заблоковано</div>';
+      } else {
+        $("banList").innerHTML = banned.map(function(id){
+          return '<div class="card"><div class="card-title" style="font-size:15px;">' + esc(who(id)) + '</div>' +
+            '<button class="btn-toggle" data-unban="' + esc(id) + '">Розблокувати</button></div>';
+        }).join("");
+      }
     }
   }
 
@@ -434,6 +484,26 @@ input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
           .eq("id", myDelId).eq("author_id", currentUserId).eq("is_active", false);
         if (r3.error) { alert("Помилка: " + r3.error.message); return; }
         await loadJobs();
+        render();
+      }
+    }
+    var banId = e.target.getAttribute("data-ban");
+    var unbanId = e.target.getAttribute("data-unban");
+
+    if (banId && isAdmin) {
+      if (confirm("Заблокувати " + who(banId) + " і прибрати всі його замовлення зі стрічки?")) {
+        var r4 = await sb.rpc("ban_user", { uid: banId });
+        if (r4.error) { alert("Помилка: " + r4.error.message); return; }
+        await loadJobs();
+        await loadAdminData();
+        render();
+      }
+    }
+    if (unbanId && isAdmin) {
+      if (confirm("Розблокувати " + who(unbanId) + "?")) {
+        var r5 = await sb.rpc("unban_user", { uid: unbanId });
+        if (r5.error) { alert("Помилка: " + r5.error.message); return; }
+        await loadAdminData();
         render();
       }
     }
@@ -529,6 +599,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--brand-blue); }
       initUser();
       await loadJobs();
       await loadFavs();
+      await loadAdminData();
       render();
 
       // живе оновлення: хтось додав/видалив/деактивував — стрічка оновиться в усіх
